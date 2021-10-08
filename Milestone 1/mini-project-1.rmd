@@ -1,29 +1,18 @@
 ---
 title: "Mini Data-Analysis Deliverable 1"
-output: html_document
+author: "Eve Chen"
+date: "07/10/2021"
+output: github_document
 ---
 
 # Welcome to my (maybe) first-ever data analysis project!
 
-And hopefully the first of many. Let's get started:
-
-1. Install the [`datateachr`](https://github.com/UBC-MDS/datateachr) package by typing the following into your **R terminal**:
-
-```
-install.packages("devtools")
-devtools::install_github("UBC-MDS/datateachr")
-```
-
-2. Load the packages below.
+Let's load the packages below.
 
 ```{r, message = FALSE, warning = FALSE}
 library(datateachr)
 library(tidyverse)
 ```
-
-3. Make a repository in the https://github.com/stat545ubc-2021 Organization. You will be working with this repository for the entire data analysis project. You can either make it public, or make it private and add the TA's and Vincenzo as collaborators. 
-
-4. When you go to submit, submit a URL to your repository to canvas. 
 
 # Task 1: Choose your favorite dataset (10 points)
 
@@ -43,24 +32,14 @@ The `datateachr` package by Hayley Boyce and Jordan Bourak currently composed of
 
 + *vancouver_trees*: Acquired courtesy of The City of Vancouver’s Open Data Portal. It currently has 146611 rows and 20 columns.
 
-**Things to keep in mind**
-
-+ We hope that this project will serve as practice for carrying our your own *independent* data analysis. Remember to comment your code, be explicit about what you are doing, and write notes in this markdown document when you feel that context is required. As you advance in the project, prompts and hints to do this will be diminished - it'll be up to you!
-
-+ Before choosing a dataset, you should always keep in mind **your goal**, or in other ways, *what you wish to achieve with this data*. This mini data-analysis project focuses on *data wrangling*, *tidying*, and *visualization*. In short, it's a way for you to get your feet wet with exploring data on your own.
-
-And that is exactly the first thing that you will do!
-
-1.1 Out of the 7 datasets available in the `datateachr` package, choose **4** that appeal to you based on their description. Write your choices below:
-
-**Note**: We encourage you to use the ones in the `datateachr` package, but if you have a dataset that you'd really like to use, you can include it here. But, please check with a member of the teaching team to see whether the dataset is of appropriate complexity. Also, include a **brief** description of the dataset here to help the teaching team understand your data.
+**1.1** Out of the 7 datasets available in the `datateachr` package, choose **4** that appeal to you based on their description. Write your choices below:
 
 1: *apt_buildings*    
 2: *cancer_sample*    
 3: *flow_sample*    
 4: *steam_games*    
 
-1.2 One way to narrowing down your selection is to *explore* the datasets. Use your knowledge of dplyr to find out at least *3* attributes about each of these datasets (an attribute is something such as number of rows, variables, class type...). The goal here is to have an idea of *what the data looks like*. 
+**1.2** One way to narrowing down your selection is to *explore* the datasets. Use your knowledge of dplyr to find out at least *3* attributes about each of these datasets (an attribute is something such as number of rows, variables, class type...). The goal here is to have an idea of *what the data looks like*. 
 
 *Hint:* This is one of those times when you should think about the cleanliness of your analysis. I added a single code chunk for you, but do you want to use more than one? Would you like to write more comments outside of the code chunk?
 
@@ -72,7 +51,7 @@ glimpse(apt_buildings)
 
 **Attributes for the *apt_buildings* include:**
 
-- Class of the data set: `c("tbl_df", "tbl", "data.frame")`, which means it is a tibble that has been coerced from a dataframe. 
+- Class of the dataset: `c("tbl_df", "tbl", "data.frame")`, which means it is a tibble that has been coerced from a dataframe. 
 - Number of rows: 3455
 - Number of columns: 37
 - Types of data in columns: 9 numeric types, 28 character types.
@@ -81,7 +60,7 @@ glimpse(apt_buildings)
 
 **Comments:**
 
-- This data set consists of different building information of 3455 apartments, including the year they were built and registered, number of units, facility conditions and so on. 
+- This dataset consists of different building information of 3455 apartments, including the year they were built and registered, number of units, facility conditions and so on. 
 - Some columns that are `character` type only consist of 2 factors as "YES" or "NO". 
 - It's possible that we can use it to study the relationship between the age of the buildings and the characteristics.
 
@@ -93,7 +72,7 @@ glimpse(cancer_sample)
 
 **Attributes for the *cancer_sample* include:**
 
-- Class of the data set: `c("tbl_df", "tbl", "data.frame")`, which means it is a tibble that has been coerced from a dataframe. 
+- Class of the dataset: `c("tbl_df", "tbl", "data.frame")`, which means it is a tibble that has been coerced from a dataframe. 
 - Number of rows: 569
 - Number of columns: 32
 - Types of data in columns: 31 numeric types, 1 character types (`diagnosis`).
@@ -102,7 +81,7 @@ glimpse(cancer_sample)
 
 **Comments:**
 
-- This data set includes 569 observations of diagnostic cancer data. 
+- This dataset includes 569 observations of diagnostic cancer data. 
 - Besides the ID of samples and the ultimate diagnosis of the breast mass ("M" = malignant, "B" = benign), the columns are mostly **quantitative features** derived from the sample image. 
 - Both statistic and clinical knowledge might be required to understand the variables and decide the ways to analyze and interpret the data.
 
@@ -113,7 +92,7 @@ glimpse(flow_sample)
 ```
 **Attributes for the *cancer_sample* include:**
 
-- Class of the data set: `c("tbl_df", "tbl", "data.frame")`, which means it is a tibble that has been coerced from a dataframe. 
+- Class of the dataset: `c("tbl_df", "tbl", "data.frame")`, which means it is a tibble that has been coerced from a dataframe. 
 - Number of rows: 218
 - Number of columns: 7
 - Types of data in columns: 4 numeric types, 3 character types.
@@ -122,7 +101,7 @@ glimpse(flow_sample)
 
 **Comments:**
 
-- This data set includes 218 observations of flow rate extrema data and additional information regarding the date and conditions of data collection. 
+- This dataset includes 218 observations of flow rate extrema data and additional information regarding the date and conditions of data collection. 
 - If we see the `extreme_type` and the flow rate `flow` as dependent variable and the others as possible factors, we can have multiple angles to study the relationship between them by correlations. 
 
 
@@ -134,7 +113,7 @@ glimpse(steam_games)
 
 **Attributes for the *steam_games* include:**
 
-- Class of the data set: `c("spec_tbl_df", tbl_df", "tbl", "data.frame")`, as a tibble subclass.
+- Class of the dataset: `c("spec_tbl_df", tbl_df", "tbl", "data.frame")`, as a tibble subclass.
 - Number of rows: 40833
 - Number of columns: 21
 - Types of data in columns: 4 numeric types, 17 character types.
@@ -143,13 +122,32 @@ glimpse(steam_games)
 
 **Comments:**
 
-- This `spec_tbl_df` subclass is new and special to me. According to a documantation, it "differs from a regular tibble only in that the `spec` attribute (which holds the column specification) is lost as soon as the object is subset and a normal `tbl_df` object is returned." 
-- It has 40833 observations, which is the most out of the 4 data sets that I've chosen.
+- The `spec_tbl_df` subclass is new and special to me. According to a documentation, it "differs from a regular tibble only in that the `spec` attribute (which holds the column specification) is lost as soon as the object is subset and a normal `tbl_df` object is returned." 
+- It has 40833 observations, which is the most out of the 4 datasets that I've chosen.
 - The columns of this set contains free text information as the url, names, developer and other details of the games. There's also common features across them that can be summarized, such as `types` and `genre`. There are also numeric features like `achivements` and `price` that seem interesting.  
 
-1.3 Now that you've explored the 4 datasets that you were initially most interested in, let's narrow it down to 2. What lead you to choose these 2? Briefly explain your choices below, and feel free to include any code in your explanation. 
+**1.3** Now that you've explored the 4 datasets that you were initially most interested in, let's narrow it down to 2. What lead you to choose these 2? Briefly explain your choices below, and feel free to include any code in your explanation. 
 
-1.4 Time for the final decision! Going back to the beginning, it's important to have an *end goal* in mind. For example, if I had chosen the `titanic` dataset for my project, I might've wanted to explore the relationship between survival and other variables. Try to think of 1 research question that you would want to answer with each dataset. Note them down below, and make your final choice based on what seems more interesting to you!
+**My two choices and explanation:**
+
+1. The *flow_sample* dataset:
+
+The variables in each column of this dataset is well organized (formats are uniformed for each observation) and easy to understand. I thought of some questions that can possibly be answered by analyzing these data at first glance. I think it would be interesting for me to learn about the fluctuation of minimum and maximum flow rate and how that changes from year to year and if our treatment of the environment and global warming has changed this throughout the years.
+
+2. The *steam_games* dataset:
+
+First of all, I like Steam and this dataset looks fun. And as I mentioned above I'm interested by the class of this dataset `spec_tbl_df`, as we didn't seem to cover this in class. Even though the information in many columns looks kind of messy and hard to deal with, I would still want to study the relationship between the reviews, achievements and the price difference of the games. 
+
+**1.4** Time for the final decision! Going back to the beginning, it's important to have an *end goal* in mind. For example, if I had chosen the `titanic` dataset for my project, I might've wanted to explore the relationship between survival and other variables. Try to think of 1 research question that you would want to answer with each dataset. Note them down below, and make your final choice based on what seems more interesting to you!
+
+**Research questions for each dataset:**
+
+1. 
+2. 
+3. 
+4.
+
+**My final choice:**
 
 # Important note
 
