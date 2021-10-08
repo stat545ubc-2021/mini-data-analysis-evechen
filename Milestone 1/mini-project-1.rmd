@@ -3,7 +3,7 @@ title: "Mini Data-Analysis Deliverable 1"
 output: html_document
 ---
 
-# Welcome to your (maybe) first-ever data analysis project!
+# Welcome to my (maybe) first-ever data analysis project!
 
 And hopefully the first of many. Let's get started:
 
@@ -24,22 +24,6 @@ library(tidyverse)
 3. Make a repository in the https://github.com/stat545ubc-2021 Organization. You will be working with this repository for the entire data analysis project. You can either make it public, or make it private and add the TA's and Vincenzo as collaborators. 
 
 4. When you go to submit, submit a URL to your repository to canvas. 
-
-# Instructions
-
-More details regarding the instructions and points allocated to each task can be found below. Briefly,
-
-+ Each milestone is worth 30 points. The number of points allocated to each task will be annotated within each deliverable. Tasks that are more challenging will often be allocated more points.
-
-+ 10 points will be allocated to the reproducibility, cleanliness, and coherence of the analysis. While the three milestones will be submitted as independent deliverables, the analysis itself is a continuum - think of it as 3 chapters to a story. Each chapter, or in this case, portion of your analysis, should be easily followed through by someone unfamiliar with the content. [Here](https://swcarpentry.github.io/r-novice-inflammation/06-best-practices-R/) is a good resource for what constitutes "good code". Learning good coding practices early in your career will save you hassle later on!
-
-# Learning Objectives
-
-By the end of this milestone, you should:
-
-+ Become familiar with your dataset of choosing
-+ Think of 4 questions that you would like to answer with your data
-+ Generate a reproducible and clear report using R Markdown
 
 # Task 1: Choose your favorite dataset (10 points)
 
@@ -82,28 +66,86 @@ And that is exactly the first thing that you will do!
 
 ```{r}
 ### Exploring dataset 1: apt_buildings ### 
+class(apt_buildings)
 glimpse(apt_buildings)
 ```
 
+**Attributes for the *apt_buildings* include:**
 
+- Class of the data set: `c("tbl_df", "tbl", "data.frame")`, which means it is a tibble that has been coerced from a dataframe. 
+- Number of rows: 3455
+- Number of columns: 37
+- Types of data in columns: 9 numeric types, 28 character types.
+- Columns names
+- Contents of variables in each column
+
+**Comments:**
+
+- This data set consists of different building information of 3455 apartments, including the year they were built and registered, number of units, facility conditions and so on. 
+- Some columns that are `character` type only consist of 2 factors as "YES" or "NO". 
+- It's possible that we can use it to study the relationship between the age of the buildings and the characteristics.
 
 ```{r}
 ### Exploring dataset 2: cancer_sample ### 
+class(apt_buildings)
 glimpse(cancer_sample)
 ```
 
+**Attributes for the *cancer_sample* include:**
 
+- Class of the data set: `c("tbl_df", "tbl", "data.frame")`, which means it is a tibble that has been coerced from a dataframe. 
+- Number of rows: 569
+- Number of columns: 32
+- Types of data in columns: 31 numeric types, 1 character types (`diagnosis`).
+- Columns names
+- Contents of variables in each column
+
+**Comments:**
+
+- This data set includes 569 observations of diagnostic cancer data. 
+- Besides the ID of samples and the ultimate diagnosis of the breast mass ("M" = malignant, "B" = benign), the columns are mostly **quantitative features** derived from the sample image. 
+- Both statistic and clinical knowledge might be required to understand the variables and decide the ways to analyze and interpret the data.
 
 ```{r}
 ### Exploring dataset 3: flow_sample ### 
+class(apt_buildings)
 glimpse(flow_sample)
 ```
+**Attributes for the *cancer_sample* include:**
+
+- Class of the data set: `c("tbl_df", "tbl", "data.frame")`, which means it is a tibble that has been coerced from a dataframe. 
+- Number of rows: 218
+- Number of columns: 7
+- Types of data in columns: 4 numeric types, 3 character types.
+- Columns names
+- Contents of variables in each column
+
+**Comments:**
+
+- This data set includes 218 observations of flow rate extrema data and additional information regarding the date and conditions of data collection. 
+- If we see the `extreme_type` and the flow rate `flow` as dependent variable and the others as possible factors, we can have multiple angles to study the relationship between them by correlations. 
 
 
 ```{r}
 ### Exploring dataset 4: steam_games ### 
+class(steam_games)
 glimpse(steam_games)
 ```
+
+**Attributes for the *steam_games* include:**
+
+- Class of the data set: `c("spec_tbl_df", tbl_df", "tbl", "data.frame")`, as a tibble subclass.
+- Number of rows: 40833
+- Number of columns: 21
+- Types of data in columns: 4 numeric types, 17 character types.
+- Columns names
+- Contents of variables in each column
+
+**Comments:**
+
+- This `spec_tbl_df` subclass is new and special to me. According to a documantation, it "differs from a regular tibble only in that the `spec` attribute (which holds the column specification) is lost as soon as the object is subset and a normal `tbl_df` object is returned." 
+- It has 40833 observations, which is the most out of the 4 data sets that I've chosen.
+- The columns of this set contains free text information as the url, names, developer and other details of the games. There's also common features across them that can be summarized, such as `types` and `genre`. There are also numeric features like `achivements` and `price` that seem interesting.  
 
 1.3 Now that you've explored the 4 datasets that you were initially most interested in, let's narrow it down to 2. What lead you to choose these 2? Briefly explain your choices below, and feel free to include any code in your explanation. 
 
