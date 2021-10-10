@@ -163,7 +163,7 @@ First of all, I like Steam and this dataset looks fun. And as I mentioned above 
 
 **My final choice: *flow_sample***
 
-They all look interesting to me, but based on the simple inspection of the datasets, I'm more confident in *flow_sample* since its data looks more organized and clean - less `NA` values and less variables that are hard to be factored or quantified.
+They all look interesting to me. But based on the simple inspection of the datasets, I'm more confident in *flow_sample* since its data looks more organized and clean - it has less `NA` values and less variables that seem hard to be factored or quantified.
 
 # Task 2: Exploring your dataset (15 points)
 
@@ -198,7 +198,8 @@ First, I want to explore the distribution of the flow rate (`flow`). This is one
 ### Make a histogram of flow, have the height of the bars represent the density, and distinguish extreme_type by colour
 flow_sample %>% 
   ggplot(aes(x = flow, y = ..density..)) +
-   geom_histogram(aes(fill = extreme_type), bins = 10, na.rm = T) +
+   geom_histogram(aes(fill = extreme_type), bins = 10, na.rm = T) + 
+   # There are 2 NA values in this dataset. I investigated and decided to remove them when making plots 
    labs(x = "Extremum flow rate in m^3/s.")
 ```
 
@@ -215,7 +216,8 @@ After the first histogram, I really want to know if they record the minimum and 
 ### Make a jitter plot of flow and month, and distinguish extreme_type by colour
 flow_sample %>% 
   ggplot(aes(as.factor(month), flow, color = extreme_type)) + 
-    geom_jitter(alpha = 0.5, width = 0.1, na.rm = T)
+    geom_jitter(alpha = 0.5, width = 0.1, na.rm = T) +
+    labs(x = "Month", y = "Extremum flow rate in m^3/s.")
 ```
 
 - From this plot, it's obvious that the maximum flow is usually collected between May to July. And the minimum flow can be collected in other months.
@@ -247,7 +249,8 @@ Better make use of the new subset now! Boxplots are a nice approach for us to vi
 flow_sample_max %>%
   ggplot(aes(as.factor(day), flow)) + 
     geom_boxplot(width = 0.5) +
-    facet_wrap(~ as.factor(month))
+    facet_wrap(~ as.factor(month)) +
+    labs(x = "Day", y = "Maximum flow rate in m^3/s.")
 ```
 
 - I know they are not the most beautiful boxplots to be observed. But from this plot we can tell that most of the data was recorded during late May, early July and the whole June. 
@@ -258,7 +261,8 @@ flow_sample_max %>%
 flow_sample_max %>%
   filter(month == 6) %>%
   ggplot(aes(as.factor(day), flow)) + 
-    geom_boxplot(width = 0.5) 
+    geom_boxplot(width = 0.5) +
+    labs(x = "Day in June", y = "Maximum flow rate in m^3/s.")
 ```
 
 - We can now see that the flow rate over `300 m^3/s` usually occurs mid June (14-21). 
@@ -266,10 +270,10 @@ flow_sample_max %>%
 
 # Task 3: My research questions for *flow_sample*
 
-1. Which year had the greatest difference in maximum and minimum flow rate? 
+1. Which `year` had the greatest difference in `maximum` and `minimum` flow rate? 
 1. Is there a trend (increases or decreases) of the difference between `maximum` and `minimum` flow rate over time (in `years`)?
 1. If there is a trend, is it related to the `day` or `month` when the flow rate is recorded? - Could it because they have recorded some maximum flow rate on days when it was not really maximum?
-1. There are 4 kinds of variables in column `sym`: *A: partial day, B: ice condtions, E: estimated, S: sample(s) collected this day, NA: no additional info*. How is the flow rate recorded possibly affected by these additional info?
+1. There are 4 kinds of variables in column `sym`: *A: partial day, B: ice condtions, E: estimated, S: sample(s) collected this day, NA: no additional info*. How is the `flow` rate recorded possibly affected by these additional info?
 
 ### Attribution
 
