@@ -8,7 +8,7 @@ This repository will contain **Eve (Yixuan) Chen**'s work for **Mini Data Analys
 
 There are three milestones for my analysis:
 
-1. [Milestone 1](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/blob/main/Milestone%201/mini-project-1.md)
+1. [Milestone 1](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/blob/main/Milestone%201/mini-project-1.md) (tag [m1.0](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/releases/tag/m1.0))
 2. Milestone 2
 3. Milestone 3
 
