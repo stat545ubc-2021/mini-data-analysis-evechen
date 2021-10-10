@@ -1,7 +1,7 @@
 ---
 title: "Mini Data-Analysis Deliverable 1"
 author: "Eve Chen"
-date: "08/Oct/2021"
+date: "09/10/2021"
 output: github_document
 ---
 
@@ -246,7 +246,7 @@ Better make use of the new subset now! Boxplots are a nice approach for us to vi
 ### Make a boxplot of rate and day, separately observe them by month.
 flow_sample_max %>%
   ggplot(aes(as.factor(day), flow)) + 
-    geom_boxplot(width = 0.2) +
+    geom_boxplot(width = 0.5) +
     facet_wrap(~ as.factor(month))
 ```
 
@@ -258,13 +258,18 @@ flow_sample_max %>%
 flow_sample_max %>%
   filter(month == 6) %>%
   ggplot(aes(as.factor(day), flow)) + 
-    geom_boxplot(width = 0.2) 
+    geom_boxplot(width = 0.5) 
 ```
 
 - We can now see that the flow rate over `300 m^3/s` usually occurs mid June (14-21). 
 - On June 21 the flow rate recorded is most likely to be the highest, spreading around `380 m^3/s.
 
-# Task 3: Write your research questions
+# Task 3: My research questions for *flow_sample*
+
+1. Which year had the greatest difference in maximum and minimum flow rate? 
+1. Is there a trend (increases or decreases) of the difference between `maximum` and `minimum` flow rate over time (in `years`)?
+1. If there is a trend, is it related to the `day` or `month` when the flow rate is recorded? - Could it because they have recorded some maximum flow rate on days when it was not really maximum?
+1. There are 4 kinds of variables in column `sym`: *A: partial day, B: ice condtions, E: estimated, S: sample(s) collected this day, NA: no additional info*. How is the flow rate recorded possibly affected by these additional info?
 
 ### Attribution
 
