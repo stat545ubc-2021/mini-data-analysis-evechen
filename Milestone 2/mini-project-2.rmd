@@ -45,8 +45,8 @@ First, write out the 4 research questions you defined in milestone 1 were. This 
 **My dataset: *flow_sample***
 
 1. Is there a trend (increases or decreases) of the `maximum` and `minimum` flow rate over time (in `years`)?
-2. How is the `maximum` and `minimum` flow rate records related to the month of the year?  
-3. Is there seasonality to when maximum and minimum flow rates are usually recorded?
+2. How is the `maximum` and `minimum` flow rate records related to the month of the year?
+3. Is there *seasonality* to when `maximum` and `minimum` flow rates are usually recorded?
 4. There are 4 kinds of variables in column `sym`: *A: partial day, B: ice condtions, E: estimated, S: sample(s) collected this day, NA: no additional info*. How is the `flow` rate recorded possibly affected by these additional info?
 <!----------------------------------------------------------------------------->
 
@@ -88,7 +88,7 @@ head(flow_sample_factor)
 
 - (*Summarizing 1*) Now, we can compute the *range* (*max* and *min*) , *mean*,  of `flow` across the groups of `extream_type` from your data to observe the overall range and statistical features of the flow rate recorded as different type.
 
-```{r flow_sum_1}
+```{r }
 flow_sample_factor %>%
   group_by(extreme_type) %>% 
   summarise(flow_maximum = max(flow),
@@ -103,7 +103,7 @@ flow_sample_factor %>%
 
 - (*Graphing 5*) Now we can simply take a look at the flow rate trend of each year based on different type - create a graph out of `flow` that has 2 layers: `geom_line` and `geome_point`
 
-```{r flow_graph_1}
+```{r }
 flow_sample%>% 
   group_by(extreme_type) %>% 
   ggplot(aes(year, flow, colour = extreme_type)) +
@@ -115,11 +115,11 @@ flow_sample%>%
 
 - From the graph above, we see that `flow` of each type is **fluctuating** within the range we summarized before, and there **isn't** an obvious trend of the `maximum` and `minimum` flow rate over `year`.  
 
-**2. How is the `maximum` and `minimum` flow rate records related to the month of the year?   **
+**2. How is the `maximum` and `minimum` flow rate records related to the month of the year?**
 
 - (*Summarizing 2*) I wanna compute the number of observations for `extreme_type` and `month`, which can be treated as categorical variables.  
 
-```{r flow_sum_2}
+```{r }
 # How many records are there for each month:
 flow_sample_factor %>%
   group_by(factor(month), extreme_type) %>% 
@@ -130,7 +130,7 @@ flow_sample_factor %>%
 
 - (*Graphing 7*) Make a graph where it makes sense to customize the alpha transparency. - I wanna how has the distribution of `flow` changed over `months` for each type of flow rate records (`extreme_type`)?
 
-```{r flow_graph_2}
+```{r }
 # I plot the ridges of flow rate over months, adjust the alpha transparency in case there will be overlapping ridges.
 flow_sample_factor %>% 
   ggplot(aes(flow, factor(month))) +
@@ -143,7 +143,7 @@ flow_sample_factor %>%
 
 - (*Summarizing 3*) Create a categorical variable `season` with 4 groups from an existing numerical variable `month`. 
 
-```{r flow_sum_3}
+```{r}
 # Create a column of seasons with 4 levels from months. 
 flow_sample_season <- flow_sample_factor %>% 
   mutate(season = factor(case_when(month %in% c(3, 4, 5) ~ "Spring",
@@ -162,7 +162,7 @@ flow_sample_season %>%
 
 I wanna see how the `flow` rate collected is distributed by seasons. 
 
-```{r flow_graph_2}
+```{r}
 # We can first take a look at the range of the flow rate. 
 range(flow_sample_season$flow)
 
@@ -229,12 +229,11 @@ Based on the operations that you've completed, how much closer are you to answer
 
 <!------------------------- Write your answer here ---------------------------->
 
-- I believe I am quite close in answering all of the questions. The first question on whether there are trends in terms of increase of maximum flow still seems unclear at this point. It may be useful to split the years up into further periods and to assess for variability in the data as well as looking further at the range of maximum and minimum flow rates. In addition, it may be useful to refine the yearly data further by splitting the data up with the observations given of “icy conditions”, to see if this may have affected the extremum flow rate on the day of the recording, and to see if there are any trends between icy conditions compared to other conditions.
+- I believe I am quite close in answering all of the questions. The first question on whether there are trends of `maximum/minimum flow` in `year` still seems unclear at this point. It may be useful to split the years up into further periods and to assess for variability in the data as well as looking further at the range of maximum and minimum flow rates. 
 
-The data in terms of summarized variables seasonality and periods has provided interested results. It appears that in the 2000s, there is more variability in terms of minimum and maximum rate to a larger range. For seasonality, it appears maximum flow rate is almost exclusively recored during summer months, whereas the majority of minimum flow rate happens in the spring and some in the winter.
-- 
-- 
-- 
+- It may be useful to further study the `flow` trends by refining the data with the observations given of both `year` and `sym`, to see if the special conditions in certain year may have affected the `extremum flow rate`.
+
+- The relationship between the `seasons` when `maximum` and `minimum` flow rate are recorded is interesting. it appears `maximum` flow rate is almost always recorded during `summer` months and sometimes `spring`, whereas the majority of `minimum` flow rate happens in the `winter` and some in the `spring`, few in the `autumn`.
 
 <!----------------------------------------------------------------------------->
 
@@ -255,8 +254,16 @@ A reminder of the definition of *tidy* data:
 Based on the definition above, can you identify if your data is tidy or untidy? Go through all your columns, or if you have >8 variables, just pick 8, and explain whether the data is untidy or tidy.
 
 <!--------------------------- Start your work below --------------------------->
-
-
+```{r}
+# Take another look of the data
+glimpse(flow_sample)
+```
+- Looking at each of the variables, it seems that the data is tidy. 
+  - Each row is an **observation**: Each row is a unique record with different `flow` rate, type and recorded data. The `station_id` is the unique ID of the hydrometric station where measurements of flow is made. The recorded data is split up into three variables of the `year`, `month` and `day`. And additional information `sym` also corresponds uniquely to the observation itselt.
+  - Each column is a **variable** - not **value**.
+  - Each cell is a **value** - some are `NA` values.
+  
+- However, if we only wanna know the extremeum data of **each year**, ignoring more information as `month`, `day` and `sym` that actually differs for what time in a year when 2 types of data was collected, we can further tidy the data to half the size. 
 
 <!----------------------------------------------------------------------------->
 
@@ -270,6 +277,28 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
 
 <!--------------------------- Start your work below --------------------------->
 
+- Untidy *flow_sample*: Using `values` in `extreme_type` as `variables` of the `flow` column.
+
+```{r}
+# To untidy it, Use `extreme_type` as names of the `flow` column.
+(flow_untidy <- 
+  flow_sample %>% 
+  pivot_wider(id_cols = c(-extreme_type, -flow), 
+                names_from = extreme_type,
+                values_from = flow))
+```
+
+- We can tidy this by putting `maximum` and `minimum` back into the same column variable: `extreme_type`.
+
+```{r}
+(flow_tidy <-
+  flow_untidy %>% 
+  pivot_longer(cols = c(maximum, minimum), 
+               names_to = "extreme_type",
+               values_to = "flow",
+               values_drop_na = T)) 
+   # dropping replicated observations with empty `flow` values would also drop some observations that had `NA` recorded in the original dataset.
+```
 
 <!----------------------------------------------------------------------------->
 
@@ -281,6 +310,14 @@ Try to choose a version of your data that you think will be appropriate to answe
 
 <!--------------------------- Start your work below --------------------------->
 
+- I have chosen: 
+  - 1. Has maximum and minimum flow rate changed over different time periods (beyond `years`)? 
+  
+  Both of these questions have yielded interesting results in terms of showing trends in the data. It would be interesting to investigate further why 2000s has greater variability (may be due to other factors like ice conditions), as well as looking further into seasonality and when maximum/minimum flow rate is recorded.
+  
+  - 2. Is there seasonality (together with other factors) to when maximum and minimum flow rates are usually recorded? 
+  
+  Both of these questions have yielded interesting results in terms of showing trends in the data. It would be interesting to investigate further why 2000s has greater variability (may be due to other factors like ice conditions), as well as looking further into seasonality and when maximum/minimum flow rate is recorded.
 
 <!----------------------------------------------------------------------------->
 
