@@ -42,11 +42,11 @@ From milestone 1, you should have an idea of the basic structure of your dataset
 First, write out the 4 research questions you defined in milestone 1 were. This will guide your work through milestone 2:
 
 <!-------------------------- Start your work below ---------------------------->
-My dataset: *flow_sample*
+**My dataset: *flow_sample***
 
-1. Which `year` had the greatest difference in `maximum` and `minimum` flow rate? 
-2. Is there a trend (increases or decreases) of the difference between `maximum` and `minimum` flow rate over time (in `years`)?
-3. If there is a trend, is it related to the `day` or `month` when the flow rate is recorded? - Could it because they have recorded some maximum flow rate on days when it was not really maximum?
+1. Is there a trend (increases or decreases) of the `maximum` and `minimum` flow rate over time (in `years`)?
+2. How is the `maximum` and `minimum` flow rate records related to the month of the year?  
+3. Is there seasonality to when maximum and minimum flow rates are usually recorded?
 4. There are 4 kinds of variables in column `sym`: *A: partial day, B: ice condtions, E: estimated, S: sample(s) collected this day, NA: no additional info*. How is the `flow` rate recorded possibly affected by these additional info?
 <!----------------------------------------------------------------------------->
 
@@ -73,7 +73,153 @@ Ensure that the output of each operation is printed!
 Make sure it's clear what research question you are doing each operation for!
 
 <!------------------------- Start your work below ----------------------------->
+#### 1.2 Operations
 
+**1. Is there a trend (increases or decreases) of the `maximum` and `minimum` flow rate over time (in `years`)?**
+
+- First, let's filter all observasions with no flow records, and convert all character columns in `flow_sample` to factors 
+
+```{r convert_factor}
+flow_sample_factor <- flow_sample %>%
+  drop_na("flow") %>%
+  mutate_if(sapply(flow_sample, is.character), as.factor)
+head(flow_sample_factor)
+```
+
+- (*Summarizing 1*) Now, we can compute the *range* (*max* and *min*) , *mean*,  of `flow` across the groups of `extream_type` from your data to observe the overall range and statistical features of the flow rate recorded as different type.
+
+```{r flow_sum_1}
+flow_sample_factor %>%
+  group_by(extreme_type) %>% 
+  summarise(flow_maximum = max(flow),
+            flow_minimum = min(flow),
+            flow_range = max(flow) - min(flow),
+            flow_mean = mean(flow),
+            flow_median = median(flow),
+            n = n())
+```
+
+- Based on the statistics above, we have a clearer idea of what `extreme_type` indicates - `maximum` for biggest flow rate recorded that year, and vise versa.
+
+- (*Graphing 5*) Now we can simply take a look at the flow rate trend of each year based on different type - create a graph out of `flow` that has 2 layers: `geom_line` and `geome_point`
+
+```{r flow_graph_1}
+flow_sample%>% 
+  group_by(extreme_type) %>% 
+  ggplot(aes(year, flow, colour = extreme_type)) +
+  geom_point(size = 1, alpha = 0.8) +
+  geom_line() +
+  labs(x = "Year", y = "Flow Rate in m^3/s", color = "Extreme type") +
+  theme_bw() 
+```
+
+- From the graph above, we see that `flow` of each type is **fluctuating** within the range we summarized before, and there **isn't** an obvious trend of the `maximum` and `minimum` flow rate over `year`.  
+
+**2. How is the `maximum` and `minimum` flow rate records related to the month of the year?   **
+
+- (*Summarizing 2*) I wanna compute the number of observations for `extreme_type` and `month`, which can be treated as categorical variables.  
+
+```{r flow_sum_2}
+# How many records are there for each month:
+flow_sample_factor %>%
+  group_by(factor(month), extreme_type) %>% 
+  count()
+```
+
+- There are 0 records of September and October, and only 1 maximum record from August. Maximums are all recorded from May to August while Minimums are recorded from November to April.
+
+- (*Graphing 7*) Make a graph where it makes sense to customize the alpha transparency. - I wanna how has the distribution of `flow` changed over `months` for each type of flow rate records (`extreme_type`)?
+
+```{r flow_graph_2}
+# I plot the ridges of flow rate over months, adjust the alpha transparency in case there will be overlapping ridges.
+flow_sample_factor %>% 
+  ggplot(aes(flow, factor(month))) +
+  ggridges::geom_density_ridges(aes(fill = extreme_type), alpha = 1/3) +
+  labs(x = "Flow Rate in m^3/s", y = "Month", fill = "Extreme type")+
+  theme_minimal()
+```
+
+**3. Is there seasonality to when maximum and minimum flow rates are usually recorded?**
+
+- (*Summarizing 3*) Create a categorical variable `season` with 4 groups from an existing numerical variable `month`. 
+
+```{r flow_sum_3}
+# Create a column of seasons with 4 levels from months. 
+flow_sample_season <- flow_sample_factor %>% 
+  mutate(season = factor(case_when(month %in% c(3, 4, 5) ~ "Spring",
+                                   month %in% c(6, 7, 8) ~ "Summer",
+                                   month %in% c(9, 10, 11) ~ "Autumn",
+                                   month %in% c(12, 1, 2) ~ "Winter"),
+                         levels = c("Spring", "Summer", "Autumn", "Winter"))) 
+flow_sample_season %>%
+  ggplot()+
+  geom_boxplot(aes(x = season, y = flow, color = extreme_type)) +
+  labs(y = "Flow Rate in m^3/s", x= "Seasons", color = "Extreme Type") +
+  theme_bw() 
+```
+
+- (*Grapphing 4*) Create 3 histograms out of summarized variables, with each histogram having different sized bins. Pick the "best" one and explain why it is the best.
+
+I wanna see how the `flow` rate collected is distributed by seasons. 
+
+```{r flow_graph_2}
+# We can first take a look at the range of the flow rate. 
+range(flow_sample_season$flow)
+
+# The difference is around 0 - 500, so we can divide the bins accordingly:
+# 50 bins, width around 10 each
+flow_sample_season %>%
+  ggplot(aes(x = flow, fill = season)) +
+  geom_histogram(bins = 50, alpha = 0.8) +
+  labs(x = "Flow rate in m^3/s", y = "Flow rate times recorded", fill = "Seasons")+
+  theme_bw() 
+# 10 bins, width around 50 each
+flow_sample_season %>%
+  ggplot(aes(x = flow, fill = season)) +
+  geom_histogram(bins = 10, alpha = 0.8) +
+  labs(x = "Flow rate in m^3", y = "Flow rate times recorded", fill = "Seasons")+
+  theme_bw() 
+# 5 bins, width around 100 each
+flow_sample_season %>%
+  ggplot(aes(x = flow, fill = season)) +
+  geom_histogram(bins = 5, alpha = 0.8) +
+  labs(x = "Flow rate in m^3", y = "Flow rate times recorded", fill = "Seasons")+
+  theme_bw() 
+```
+
+- The best bin size I choose is `10`. The bins are well separated but not too scattered. I can observe an overall range where the `flow` rate collected in certain `seasons` will be distributed. 
+
+
+**4. There are 4 kinds of variables in column `sym`: *A: partial day, B: ice condtions, E: estimated, S: sample(s) collected this day, NA: no additional info*. How is the `flow` rate recorded possibly affected by these additional info?**
+
+- (*Summarizing 4*) Based on two categorical variables, calculate two summary statistics of your choosing.
+
+```{r}
+flow_sample_season %>%
+  group_by(extreme_type, sym) %>%
+  summarise(flow_max = max(flow),
+            flow_min = min(flow),
+            flow_mean = mean(flow),
+            records = n())
+```
+
+- There are only 2 records where the flow rate is `E:estimated`, one for each extreme type. `A: partial day` is only with the `maximum` records, while `B: ice conditions` only happens when `minimum` is recorded. 
+
+- (*Graphing 3*) I wanna know how `B:ice conditions` affect the minimum rate recorded. Create a graph of your choosing, make one of the axes logarithmic, and format the axes labels so that they are "pretty" or easier to read. 
+
+```{r}
+flow_sample_season  %>% 
+  filter(extreme_type == "minimum")  %>% 
+  ggplot(aes(flow, year, colour = sym)) +
+  geom_point(size = 1, alpha = 0.8) +
+  scale_x_log10(labels = scales::label_number(suffix = "m^3/s")) +
+  scale_color_discrete(labels = c('B: Ice condtions','E: Estimated','NA: No additional info')) +
+  labs(x = "Flow Rate", y = "Year", colour = "Record infomation") +
+  facet_wrap(~ sym, ncol = 2) +
+  theme_bw() 
+```
+
+- We can see that mostly when `minimum flow` is recorded, it's of `B: ice conditions` and the values recorded at `B` can ba both lowest or highest among all. So the record information `sym` doesn't appear to have an obvious effect on the `minimum flow`
 
 <!----------------------------------------------------------------------------->
 
@@ -83,6 +229,12 @@ Based on the operations that you've completed, how much closer are you to answer
 
 <!------------------------- Write your answer here ---------------------------->
 
+- I believe I am quite close in answering all of the questions. The first question on whether there are trends in terms of increase of maximum flow still seems unclear at this point. It may be useful to split the years up into further periods and to assess for variability in the data as well as looking further at the range of maximum and minimum flow rates. In addition, it may be useful to refine the yearly data further by splitting the data up with the observations given of “icy conditions”, to see if this may have affected the extremum flow rate on the day of the recording, and to see if there are any trends between icy conditions compared to other conditions.
+
+The data in terms of summarized variables seasonality and periods has provided interested results. It appears that in the 2000s, there is more variability in terms of minimum and maximum rate to a larger range. For seasonality, it appears maximum flow rate is almost exclusively recored during summer months, whereas the majority of minimum flow rate happens in the spring and some in the winter.
+- 
+- 
+- 
 
 <!----------------------------------------------------------------------------->
 
@@ -103,6 +255,7 @@ A reminder of the definition of *tidy* data:
 Based on the definition above, can you identify if your data is tidy or untidy? Go through all your columns, or if you have >8 variables, just pick 8, and explain whether the data is untidy or tidy.
 
 <!--------------------------- Start your work below --------------------------->
+
 
 
 <!----------------------------------------------------------------------------->
