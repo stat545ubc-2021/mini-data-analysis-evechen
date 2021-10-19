@@ -77,7 +77,7 @@ Make sure it's clear what research question you are doing each operation for!
 
 **1. Is there a trend (increases or decreases) of the `maximum` and `minimum` flow rate over time (in `years`)?**
 
-- First, let's filter all observasions with no flow records, and convert all character columns in `flow_sample` to factors 
+- First, let's filter all observasions with no flow records, and convert all character columns in `flow_sample` to factors. Save it as `flow_sample_factor`.
 
 ```{r convert_factor}
 flow_sample_factor <- flow_sample %>%
@@ -86,7 +86,7 @@ flow_sample_factor <- flow_sample %>%
 head(flow_sample_factor)
 ```
 
-- (*Summarizing 1*) Now, we can compute the *range* (*max* and *min*) , *mean*,  of `flow` across the groups of `extream_type` from your data to observe the overall range and statistical features of the flow rate recorded as different type.
+- (*Summarizing 1*) Now, we can compute the *range* (*max*, *min* and contrast) , *mean* and *median* of `flow` across the groups of `extream_type` from the data, to observe the overall range and statistical features of the flow rate recorded as different type.
 
 ```{r }
 flow_sample_factor %>%
@@ -99,17 +99,18 @@ flow_sample_factor %>%
             n = n())
 ```
 
-- Based on the statistics above, we have a clearer idea of what `extreme_type` indicates - `maximum` for biggest flow rate recorded that year, and vise versa.
+- Based on the statistics above, we have a clearer idea of what `extreme_type` indicates - `maximum` for the **biggest flow rate** (range from `107 m^3/s` to `466 m^3/s`) recorded that year, and `minimum` for the **smallest flow rate** (range from `3.62 m^3/s` to `8.44 m^3/s`) recorded that year. Since the range is so diverse, it's better for us to always observe these two types separately.
 
 - (*Graphing 5*) Now we can simply take a look at the flow rate trend of each year based on different type - create a graph out of `flow` that has 2 layers: `geom_line` and `geome_point`
 
 ```{r }
-flow_sample%>% 
+flow_sample_factor %>% 
   group_by(extreme_type) %>% 
   ggplot(aes(year, flow, colour = extreme_type)) +
   geom_point(size = 1, alpha = 0.8) +
   geom_line() +
-  labs(x = "Year", y = "Flow Rate in m^3/s", color = "Extreme type") +
+  labs(x = "Year", y = "Flow rate", color = "Extreme type") +
+  scale_y_continuous(labels = scales::label_number(suffix = " m^3/s")) +
   theme_bw() 
 ```
 
@@ -117,7 +118,7 @@ flow_sample%>%
 
 **2. How is the `maximum` and `minimum` flow rate records related to the month of the year?**
 
-- (*Summarizing 2*) I wanna compute the number of observations for `extreme_type` and `month`, which can be treated as categorical variables.  
+- (*Summarizing 2*) First, I wanna compute the number of observations for `extreme_type` and `month` (which can also be treated as a categorical variable) to see if the records are evenly distributed in each `month`.
 
 ```{r }
 # How many records are there for each month:
@@ -126,73 +127,88 @@ flow_sample_factor %>%
   count()
 ```
 
-- There are 0 records of September and October, and only 1 maximum record from August. Maximums are all recorded from May to August while Minimums are recorded from November to April.
+- Surprisingly, there are only **10 rows** summarized: 0 records of `September` and `October`, and only 1 maximum record from `August`. Maximums are all recorded from `May` to `August` (5-8) while minimums are recorded from `November` to `April` (1-4, 11-12).
 
-- (*Graphing 7*) Make a graph where it makes sense to customize the alpha transparency. - I wanna how has the distribution of `flow` changed over `months` for each type of flow rate records (`extreme_type`)?
+- (*Graphing 7*) Make a graph where it makes sense to customize the alpha transparency. - I wanna how has the distribution of `flow` changed over `months` for each type of flow rate records (`extreme_type`). So we can plot the ridges of flow rate over months, and adjust the alpha transparency in case there will be overlapping ridges
 
 ```{r }
-# I plot the ridges of flow rate over months, adjust the alpha transparency in case there will be overlapping ridges.
 flow_sample_factor %>% 
   ggplot(aes(flow, factor(month))) +
   ggridges::geom_density_ridges(aes(fill = extreme_type), alpha = 1/3) +
-  labs(x = "Flow Rate in m^3/s", y = "Month", fill = "Extreme type")+
+  labs(x = "Flow rate", y = "Month", fill = "Extreme type") +
+  scale_x_continuous(labels = scales::label_number(suffix = " m^3/s")) +
   theme_minimal()
 ```
+
+- Minimum flow rate distributed recorded from month `1-4` and `11-12` are mostly centering around `0 m^3/s`, while the maximum rate recorded from month `5-7` is of higher value and widely distributed, mostly peak at around `150-200 m^3/s`. 
 
 **3. Is there seasonality to when maximum and minimum flow rates are usually recorded?**
 
 - (*Summarizing 3*) Create a categorical variable `season` with 4 groups from an existing numerical variable `month`. 
 
 ```{r}
-# Create a column of seasons with 4 levels from months. 
-flow_sample_season <- flow_sample_factor %>% 
+# Create a new tibble with a new column of seasons with 4 levels from months, save as `flow_sample_season`
+(flow_sample_season <- flow_sample_factor %>% 
   mutate(season = factor(case_when(month %in% c(3, 4, 5) ~ "Spring",
                                    month %in% c(6, 7, 8) ~ "Summer",
                                    month %in% c(9, 10, 11) ~ "Autumn",
                                    month %in% c(12, 1, 2) ~ "Winter"),
-                         levels = c("Spring", "Summer", "Autumn", "Winter"))) 
+                         levels = c("Spring", "Summer", "Autumn", "Winter"))))
+
+# Visualize the flow rate distribution of 4 seasons.
 flow_sample_season %>%
-  ggplot()+
-  geom_boxplot(aes(x = season, y = flow, color = extreme_type)) +
-  labs(y = "Flow Rate in m^3/s", x= "Seasons", color = "Extreme Type") +
+  ggplot(aes(x = season, y = flow, color = extreme_type))+
+  geom_boxplot() +
+  geom_jitter(aes(color = extreme_type), alpha = 0.3) +
+  labs(y = "Flow rate", x= "Seasons", color = "Extreme type") +
+  scale_y_continuous(labels = scales::label_number(suffix = " m^3/s")) +
   theme_bw() 
 ```
 
-- (*Grapphing 4*) Create 3 histograms out of summarized variables, with each histogram having different sized bins. Pick the "best" one and explain why it is the best.
+- (*Grapphing 4*) Create 3 histograms out of summarized variables, with each histogram having different sized bins. Pick the "best" one and explain why it is the best. - I wanna see how the `flow` rate collected is distributed by seasons. 
 
-I wanna see how the `flow` rate collected is distributed by seasons. 
+- We can first take a look at the range of the flow rate:
 
 ```{r}
-# We can first take a look at the range of the flow rate. 
 range(flow_sample_season$flow)
+```
 
-# The difference is around 0 - 500, so we can divide the bins accordingly:
+- The difference is approcimately `0 - 500`, so we can divide the bins accordingly:
+
+```{r}
 # 50 bins, width around 10 each
 flow_sample_season %>%
   ggplot(aes(x = flow, fill = season)) +
   geom_histogram(bins = 50, alpha = 0.8) +
-  labs(x = "Flow rate in m^3/s", y = "Flow rate times recorded", fill = "Seasons")+
+  ggtitle("Record counts for different flow rate: 50 bins") +
+  labs(x = "Flow rate", y = "Record counts", fill = "Seasons")+
+  scale_x_continuous(labels = scales::label_number(suffix = " m^3/s")) +
   theme_bw() 
 # 10 bins, width around 50 each
 flow_sample_season %>%
   ggplot(aes(x = flow, fill = season)) +
   geom_histogram(bins = 10, alpha = 0.8) +
-  labs(x = "Flow rate in m^3", y = "Flow rate times recorded", fill = "Seasons")+
+  ggtitle("Record counts for different flow rate: 10 bins") +
+  labs(x = "Flow rate", y = "Record counts", fill = "Seasons")+
+  scale_x_continuous(labels = scales::label_number(suffix = " m^3/s")) +
   theme_bw() 
 # 5 bins, width around 100 each
 flow_sample_season %>%
   ggplot(aes(x = flow, fill = season)) +
   geom_histogram(bins = 5, alpha = 0.8) +
-  labs(x = "Flow rate in m^3", y = "Flow rate times recorded", fill = "Seasons")+
+  ggtitle("Record counts for different flow rate: 5 bins") +
+  labs(x = "Flow rate", y = "Record counts", fill = "Seasons")+
+  scale_x_continuous(labels = scales::label_number(suffix = " m^3/s")) +
   theme_bw() 
 ```
 
-- The best bin size I choose is `10`. The bins are well separated but not too scattered. I can observe an overall range where the `flow` rate collected in certain `seasons` will be distributed. 
+- The best bin size I choose is `10`. And I think any sizes as `20` or `25` would also look similarly well if we want to take a closer look of the distributions. (Here I only plotted 2 other extreme bin choices for comparisons). 
+- With the right bin size, the resulted bins are well separated but not too scattered. I can observe an overall range where the `flow` rate collected in certain `seasons` will be distributed. 
 
 
-**4. There are 4 kinds of variables in column `sym`: *A: partial day, B: ice condtions, E: estimated, S: sample(s) collected this day, NA: no additional info*. How is the `flow` rate recorded possibly affected by these additional info?**
+**4. There are 4 levels of variables in column `sym`: *A: partial day, B: ice condtions, E: estimated, S: sample(s) collected this day, NA: no additional info*. How is the `flow` rate recorded possibly affected by these additional info?**
 
-- (*Summarizing 4*) Based on two categorical variables, calculate two summary statistics of your choosing.
+- (*Summarizing 4*) Based on two categorical variables, calculate two summary statistics of your choosing. - I'm interested in the statistics about `flow` in different `extreme_type` and `sym`.
 
 ```{r}
 flow_sample_season %>%
@@ -205,15 +221,15 @@ flow_sample_season %>%
 
 - There are only 2 records where the flow rate is `E:estimated`, one for each extreme type. `A: partial day` is only with the `maximum` records, while `B: ice conditions` only happens when `minimum` is recorded. 
 
-- (*Graphing 3*) I wanna know how `B:ice conditions` affect the minimum rate recorded. Create a graph of your choosing, make one of the axes logarithmic, and format the axes labels so that they are "pretty" or easier to read. 
+- (*Graphing 3*) Create a graph of your choosing, make one of the axes logarithmic, and format the axes labels so that they are "pretty" or easier to read - Based on the observations counts shown above, I wanna make a scatter plot of `flow` and `year`, separated by `sym`, to investigate how `B:ice conditions` and others affect the `minimum` rate recorded. And since `minimum` rates are of range `3.62 - 8.44`, it makes sense to transform the `flow` digits and labels for readability. 
 
 ```{r}
 flow_sample_season  %>% 
   filter(extreme_type == "minimum")  %>% 
   ggplot(aes(flow, year, colour = sym)) +
-  geom_point(size = 1, alpha = 0.8) +
+  geom_point(size = 1.5, alpha = 0.8) +
   scale_x_log10(labels = scales::label_number(suffix = "m^3/s")) +
-  scale_color_discrete(labels = c('B: Ice condtions','E: Estimated','NA: No additional info')) +
+  scale_colour_discrete(labels = c('B: Ice condtions','E: Estimated','NA: No additional info')) +
   labs(x = "Flow Rate", y = "Year", colour = "Record infomation") +
   facet_wrap(~ sym, ncol = 2) +
   theme_bw() 
@@ -229,9 +245,9 @@ Based on the operations that you've completed, how much closer are you to answer
 
 <!------------------------- Write your answer here ---------------------------->
 
-- I believe I am quite close in answering all of the questions. The first question on whether there are trends of `maximum/minimum flow` in `year` still seems unclear at this point. It may be useful to split the years up into further periods and to assess for variability in the data as well as looking further at the range of maximum and minimum flow rates. 
+- I believe I am quite close in answering all of the questions. The last question on whether the `flow` is affected by `sym` still seems unclear at this point. It may be useful to further investigate the data by combining the `sym` with more information as `year`, `season` and `month`, and to also assess the effect on the `maximum` flow rates despite finite observations in non-NA levels of `sym`. 
 
-- It may be useful to further study the `flow` trends by refining the data with the observations given of both `year` and `sym`, to see if the special conditions in certain year may have affected the `extremum flow rate`.
+- It may be useful to further study the `flow` trends by refining the data with the observations given of both the date of records and `sym`, so the refined question would be: **is the `extremum flow rate` affected by both the `year` or `season` of the record, and the special conditions `sym`?**
 
 - The relationship between the `seasons` when `maximum` and `minimum` flow rate are recorded is interesting. it appears `maximum` flow rate is almost always recorded during `summer` months and sometimes `spring`, whereas the majority of `minimum` flow rate happens in the `winter` and some in the `spring`, few in the `autumn`.
 
@@ -247,7 +263,7 @@ A reminder of the definition of *tidy* data:
 - Each column is a **variable**
 - Each cell is a **value**
 
-*Tidy'ing* data is sometimes necessary because it can simplify computation. Other times it can be nice to organize data so that it can be easier to understand when read manually. 
+*Tidying* data is sometimes necessary because it can simplify computation. Other times it can be nice to organize data so that it can be easier to understand when read manually. 
 
 ### 2.1 (2.5 points)
 
@@ -255,15 +271,15 @@ Based on the definition above, can you identify if your data is tidy or untidy? 
 
 <!--------------------------- Start your work below --------------------------->
 ```{r}
-# Take another look of the data
+# Take another look of the originaldata
 glimpse(flow_sample)
 ```
-- Looking at each of the variables, it seems that the data is tidy. 
-  - Each row is an **observation**: Each row is a unique record with different `flow` rate, type and recorded data. The `station_id` is the unique ID of the hydrometric station where measurements of flow is made. The recorded data is split up into three variables of the `year`, `month` and `day`. And additional information `sym` also corresponds uniquely to the observation itselt.
-  - Each column is a **variable** - not **value**.
+- Looking at each of the variables, it seems that the data is **tidy**. 
+  - Each row is an **observation**: Each row is a **unique** record with different extrema `flow` rate, `extreme_type` and record related information. 
+  - Each column is a **variable**: All 7 variables considered, they are not **values**. Beside the data column `flow` and the type column `extreme_type`, there are 5 columns of variables. The `station_id` is the unique ID of the hydrometric station where measurements of flow is made, in this dataset all the records are from the same station. The recorded date is split up into three variables of the `year`, `month` and `day`. And additional information `sym` also corresponds uniquely to the observation itself.
   - Each cell is a **value** - some are `NA` values.
   
-- However, if we only wanna know the extremeum data of **each year**, ignoring more information as `month`, `day` and `sym` that actually differs for what time in a year when 2 types of data was collected, we can further tidy the data to half the size. 
+- However, if we only wanna know the extrema data of **each year**, ignoring more information as `month`, `day` and `sym` that actually **differs** for what time in a year when 2 types of data was collected, we can further tidy the data to half the size. 
 
 <!----------------------------------------------------------------------------->
 
@@ -277,7 +293,7 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
 
 <!--------------------------- Start your work below --------------------------->
 
-- Untidy *flow_sample*: Using `values` in `extreme_type` as `variables` of the `flow` column.
+- Untidy *flow_sample*: Using `values` in `extreme_type` as `variables` of the `flow` column, save the new tibble as `flow_untidy`.
 
 ```{r}
 # To untidy it, Use `extreme_type` as names of the `flow` column.
@@ -288,7 +304,7 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
                 values_from = flow))
 ```
 
-- We can tidy this by putting `maximum` and `minimum` back into the same column variable: `extreme_type`.
+- We can tidy this by putting `maximum` and `minimum` back into the same column variable: `extreme_type`. Save it as `flow_tidy`.
 
 ```{r}
 (flow_tidy <-
@@ -297,8 +313,9 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
                names_to = "extreme_type",
                values_to = "flow",
                values_drop_na = T)) 
-   # dropping replicated observations with empty `flow` values would also drop some observations that had `NA` recorded in the original dataset.
 ```
+
+- Dropping replicated observations with empty `flow` values would also drop some observations that had `NA` recorded in the original dataset.
 
 <!----------------------------------------------------------------------------->
 
@@ -311,13 +328,13 @@ Try to choose a version of your data that you think will be appropriate to answe
 <!--------------------------- Start your work below --------------------------->
 
 - I have chosen: 
-  - 1. Has maximum and minimum flow rate changed over different time periods (beyond `years`)? 
+  - 1. The refined question of question 4: is the `extremum flow rate` affected by both the `year` or `season` of the record, and the special conditions `sym`?? 
   
-  Both of these questions have yielded interesting results in terms of showing trends in the data. It would be interesting to investigate further why 2000s has greater variability (may be due to other factors like ice conditions), as well as looking further into seasonality and when maximum/minimum flow rate is recorded.
+  After my exploratory analysis, whether the `flow` is affected by `sym` still remained unclear. It may be useful to further investigate the data by combining the `sym` with more information as `year`, `season` and `month`, and to also assess the effect on the `maximum` flow rates despite finite observations in non-NA levels of `sym`. 
   
-  - 2. Is there seasonality (together with other factors) to when maximum and minimum flow rates are usually recorded? 
+  - 2. Is there `seasonality` (together with other factors) to when `maximum` and `minimum` flow rates are usually recorded and `flow` values differs in range? 
   
-  Both of these questions have yielded interesting results in terms of showing trends in the data. It would be interesting to investigate further why 2000s has greater variability (may be due to other factors like ice conditions), as well as looking further into seasonality and when maximum/minimum flow rate is recorded.
+  There was interesting results of seasonality shown to when maximum and minimum flow rates are recorded. It would be interesting looking further into of both types of `flow` data, and see if the range of them is related to seasonality. 
 
 <!----------------------------------------------------------------------------->
 
