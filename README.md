@@ -28,6 +28,11 @@ There are three milestones for my analysis, work of which is distributed in 3 fo
     - R Markdown with source code: [mini-project-2.rmd](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/blob/main/Milestone%202/mini-project-2.rmd)
     - Figures: [mini-project-2 file folder](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/tree/main/Milestone%202/mini-project-2_files/figure-gfm)
     
-3. Milestone 3
+3. [Milestone 3](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/tree/main/Milestone%203)
+
+    In the last milestone, we’ll be sharpening some of the results we obtained from the previous milestones by: manipulating special data types in R including factors and/or dates and times, fitting a model object to the data and extract a result, and reading and writing data as separate files.
+    - Markdown: [mini-project-3.md](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/blob/main/Milestone%203/mini-project-3.md)
+    - R Markdown with source code: [mini-project-3.rmd](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/blob/main/Milestone%203/mini-project-3.rmd)
+    - Figures: [mini-project-3 file folder](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/tree/main/Milestone%203/mini-project-3_files/figure-gfm)
 
 **Thanks for viewing and commenting on my work! 😃**
