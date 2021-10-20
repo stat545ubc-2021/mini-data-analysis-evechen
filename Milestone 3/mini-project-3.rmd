@@ -39,8 +39,8 @@ library(tidyverse)
 From Milestone 2, you chose two research questions. What were they? Put them here.
 
 <!-------------------------- Start your work below ---------------------------->
-1. *FILL_THIS_IN*
-2. *FILL_THIS_IN*
+1. Is the extremum `flow` rate affected by both the `year` or `season` of the record, and the special conditions `sym`?
+2. Is there **seasonality** to when `maximum` and `minimum` flow rates are usually recorded and `flow` values differs in range?
 <!----------------------------------------------------------------------------->
 
 
@@ -51,8 +51,33 @@ For this exercise, you'll be choosing two of the three tasks below -- both tasks
 But first, tasks 1 and 2 below ask you to modify a plot you made in a previous milestone. The plot you choose should involve plotting across at least three groups (whether by facetting, or using an aesthetic like colour). Place this plot below (you're allowed to modify the plot if you'd like). If you don't have such a plot, you'll need to make one. Place the code for your plot below.
 
 <!-------------------------- Start your work below ---------------------------->
+- First, let's generate a new tibble `flow_sample_season` as last deliverable. This new object is from `flow_sample` and has a new column of four-leveled factors `season` divided by `month`.
 
+```{r}
+flow_sample_season <- flow_sample %>%
+  drop_na("flow") %>% #remove 2 observations with empty flow record
+  mutate_if(sapply(flow_sample, is.character), as.factor) %>%  #all character variables as factors
+  mutate(season = factor(case_when(month %in% c(3, 4, 5) ~ "Spring",
+                                   month %in% c(6, 7, 8) ~ "Summer",
+                                   month %in% c(9, 10, 11) ~ "Autumn",
+                                   month %in% c(12, 1, 2) ~ "Winter"),
+                         levels = c("Spring", "Summer", "Autumn", "Winter"))) #add season factor and define order of levels
+```
 
+- Now we can generate a plot we 
+
+``` {r}
+sym.labs <- c('B: Ice condtions','E: Estimated','NA: No additional info')
+names(sym.labs) <- c("B", "E", "NA")
+flow_sample_season  %>% 
+  filter(extreme_type == "minimum")  %>% 
+  ggplot(aes(flow, year, colour = season)) +
+  geom_point(size = 1.5, alpha = 0.8) +
+  scale_x_log10(labels = scales::label_number(suffix = "m^3/s")) +
+  labs(x = "Flow Rate", y = "Year", colour = "Season") +
+  facet_wrap(~ sym, ncol = 2, labeller = labeller(sym = sym.labs)) +
+  theme_bw() 
+```
 
 <!----------------------------------------------------------------------------->
 
