@@ -182,7 +182,7 @@ flow_sample_factor %>%
   geom_point(size = 1, alpha = 0.8) +
   geom_line() +
   labs(x = "Year", y = "Flow rate", color = "Extreme type") +
-  scale_y_continuous(labels = scales::label_number(suffix = " m^3/s")) +
+  scale_y_log10(labels = scales::label_number(suffix = " m^3/s")) +
   theme_bw() 
 ```
 
@@ -291,7 +291,7 @@ flow_sample_season %>%
   geom_boxplot() +
   geom_jitter(aes(color = extreme_type), alpha = 0.3) +
   labs(y = "Flow rate", x= "Seasons", color = "Extreme type") +
-  scale_y_continuous(labels = scales::label_number(suffix = " m^3/s")) +
+  scale_y_log10(labels = scales::label_number(suffix = " m^3/s")) +
   theme_bw() 
 ```
 
@@ -320,39 +320,39 @@ flow_sample_season %>%
   geom_histogram(bins = 50, alpha = 0.8) +
   ggtitle("Record counts for different flow rate: 50 bins") +
   labs(x = "Flow rate", y = "Record counts", fill = "Seasons")+
-  scale_x_continuous(labels = scales::label_number(suffix = " m^3/s")) +
+  scale_x_log10(labels = scales::label_number(suffix = " m^3/s")) +
   theme_bw() 
 ```
 
 ![](mini-project-2_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
-# 10 bins, width around 50 each
+# 20 bins, width around 25 each
 flow_sample_season %>%
   ggplot(aes(x = flow, fill = season)) +
-  geom_histogram(bins = 10, alpha = 0.8) +
+  geom_histogram(bins = 20, alpha = 0.8) +
   ggtitle("Record counts for different flow rate: 10 bins") +
   labs(x = "Flow rate", y = "Record counts", fill = "Seasons")+
-  scale_x_continuous(labels = scales::label_number(suffix = " m^3/s")) +
+  scale_x_log10(labels = scales::label_number(suffix = " m^3/s")) +
   theme_bw() 
 ```
 
 ![](mini-project-2_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
 
 ``` r
-# 5 bins, width around 100 each
+# 10 bins, width around 50 each
 flow_sample_season %>%
   ggplot(aes(x = flow, fill = season)) +
-  geom_histogram(bins = 5, alpha = 0.8) +
+  geom_histogram(bins = 10, alpha = 0.8) +
   ggtitle("Record counts for different flow rate: 5 bins") +
   labs(x = "Flow rate", y = "Record counts", fill = "Seasons")+
-  scale_x_continuous(labels = scales::label_number(suffix = " m^3/s")) +
+  scale_x_log10(labels = scales::label_number(suffix = " m^3/s")) +
   theme_bw() 
 ```
 
 ![](mini-project-2_files/figure-gfm/unnamed-chunk-8-3.png)<!-- -->
 
--   The best bin size I choose is `10`. And I think any sizes as `20` or
+-   The best bin size I choose is `20`. And I think any sizes as `15` or
     `25` would also look similarly well if we want to take a closer look
     of the distributions. (Here I only plotted 2 other extreme bin
     choices for comparisons).
@@ -412,8 +412,8 @@ flow_sample_season  %>%
   geom_point(size = 1.5, alpha = 0.8) +
   scale_x_log10(labels = scales::label_number(suffix = "m^3/s")) +
   scale_colour_discrete(labels = c('B: Ice condtions','E: Estimated','NA: No additional info')) +
-  labs(x = "Flow Rate", y = "Year", colour = "Record infomation") +
-  facet_wrap(~ sym, ncol = 2) +
+  labs(x = "Flow Rate", y = "Year", colour = "Additional infomation") +
+  facet_wrap(~ season, ncol = 1) +
   theme_bw() 
 ```
 
