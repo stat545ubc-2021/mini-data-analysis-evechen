@@ -34,12 +34,13 @@ Begin by loading your data and the tidyverse package below:
 ```{r, message = FALSE}
 library(datateachr) # <- might contain the data you picked!
 library(tidyverse)
+library(broom)
 ```
 
 From Milestone 2, you chose two research questions. What were they? Put them here.
 
 <!-------------------------- Start your work below ---------------------------->
-1. Is the extremum `flow` rate affected by both the `year` or `season` of the record, and the special conditions `sym`?
+1. Is there a trend (increases or decreases) of the `maximum` and `minimum` flow rate over time (in `year` or `season`)?
 2. Is there **seasonality** to when `maximum` and `minimum` flow rates are usually recorded and `flow` values differs in range?
 <!----------------------------------------------------------------------------->
 
@@ -64,18 +65,16 @@ flow_sample_season <- flow_sample %>%
                          levels = c("Spring", "Summer", "Autumn", "Winter"))) #add season factor and define order of levels
 ```
 
-- Now we can generate a plot we 
+- Now we can generate a plot with facetted by 4 `seasons` and colored by different kind of conditions `sym`.  
 
 ``` {r}
-sym.labs <- c('B: Ice condtions','E: Estimated','NA: No additional info')
-names(sym.labs) <- c("B", "E", "NA")
 flow_sample_season  %>% 
-  filter(extreme_type == "minimum")  %>% 
-  ggplot(aes(flow, year, colour = season)) +
+  ggplot(aes(flow, year, colour = sym)) +
   geom_point(size = 1.5, alpha = 0.8) +
   scale_x_log10(labels = scales::label_number(suffix = "m^3/s")) +
-  labs(x = "Flow Rate", y = "Year", colour = "Season") +
-  facet_wrap(~ sym, ncol = 2, labeller = labeller(sym = sym.labs)) +
+  scale_colour_discrete(labels = c('A: partial day', 'B: Ice condtions', 'E: Estimated', 'NA: No additional info')) +
+  labs(x = "Flow Rate", y = "Year", colour = "Additional info") +
+  facet_wrap(~ season, ncol = 1) +
   theme_bw() 
 ```
 
@@ -98,22 +97,48 @@ Now, choose two of the following tasks.
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Task Number**: FILL_THIS_IN
+**Task Number**: 1
 
+- Let's produce a new plot using `fct_inorder()` from the `forcats` packages, to re-order the plot based on the values of the `flow` rate, which orders them in the average value of `flow`. 
 
+``` {r}
+flow_sample_season  %>% 
+  mutate(season = fct_reorder(season, flow))  %>% 
+  ggplot(aes(flow, year, colour = sym)) +
+  geom_point(size = 1.5, alpha = 0.8) +
+  scale_x_log10(labels = scales::label_number(suffix = "m^3/s")) +
+  scale_colour_discrete(labels = c('A: partial day', 'B: Ice condtions', 'E: Estimated', 'NA: No additional info')) +
+  labs(x = "Flow Rate", y = "Year", colour = "Additional info") +
+  facet_wrap(~ season, ncol = 1) +
+  theme_bw() 
+```
 
 <!----------------------------------------------------------------------------->
 
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Task Number**: FILL_THIS_IN
+**Task Number**: 2
 
+- Produce a new plot that groups all the `seasons` except for `Spring` into an `Other`, using the `forcats` package. 
 
+``` {r}
+flow_sample_season  %>% 
+  mutate(season = fct_reorder(season, flow),
+         season = fct_other(season, keep = "Spring", other_level = "Other"))  %>% 
+  ggplot(aes(flow, year, colour = sym)) +
+  geom_point(size = 1.5, alpha = 0.8) +
+  scale_x_log10(labels = scales::label_number(suffix = "m^3/s")) +
+  scale_colour_discrete(labels = c('A: partial day', 'B: Ice condtions', 'E: Estimated', 'NA: No additional info')) +
+  labs(x = "Flow Rate", y = "Year", colour = "Additional info") +
+  facet_wrap(~ season, ncol = 2) +
+  theme_bw() 
+```
+
+- I used this grouping to be able to see the `flow` rate recorded during the `Spring` as well as the `flow` rate during other `seasons`, since `Spring` is the only season that contains both `minimum` and `maximum` flow rate. This would allow me to extrapolate in which year the maximum and minimum flow rate was recorded during the 21st and 20th century. I can then be able to extrapolate **if there's a year when both `minimum` and `maximum` rate was recorded in `Spring`, and if the records taken in such close date would make the value different from the others**. 
+- From the plot we see that there are years when both records are taken in `Spring`. Values of minimum or maximum `flow` vary less (in narrower range) compared to the other seasons. There are no records with additional information as `A: partial day` or `E: Estimated` in `Spring`.  
 
 <!----------------------------------------------------------------------------->
-
-    
 
 # Exercise 2: Modelling
 
@@ -123,9 +148,9 @@ Pick a research question, and pick a variable of interest (we'll call it "Y") th
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Research Question**: FILL_THIS_IN
+**Research Question**: Is there a trend (increases or decreases) of the `maximum` flow rate over `year`?
 
-**Variable of interest**: FILL_THIS_IN
+**Variable of interest**: Maximum `flow` rate and `year`
 
 <!----------------------------------------------------------------------------->
 
@@ -135,11 +160,26 @@ Fit a model or run a hypothesis test that provides insight on this variable with
 
 - **Note**: It's OK if you don't know how these models/tests work. Here are some examples of things you can do here, but the sky's the limit. 
     - You could fit a model that makes predictions on Y using another variable, by using the `lm()` function.
-    - You could test whether the mean of Y equals 0 using `t.test()`, or maybe the mean across two groups are different using `t.test()`, or maybe the mean across multiple groups are different using `anova()` (you may have to pivot your data for the latter two).
+    - You could test whether the mean of Y e
+    quals 0 using `t.test()`, or maybe the mean across two groups are different using `t.test()`, or maybe the mean across multiple groups are different using `anova()` (you may have to pivot your data for the latter two).
     - You could use `lm()` to test for significance of regression.
 
 <!-------------------------- Start your work below ---------------------------->
 
+- I decided use the lm() function to test for significance of regression for `flow` based on the `year`. I put this into the model `lmfit`.
+
+```{r}
+(lmfit <- lm(flow ~ year, data = filter(flow_sample, extreme_type == "maximum")))
+```
+- We can graph it to see what the significance looks like.
+
+``` {r}
+filter(flow_sample, extreme_type == "maximum") %>% 
+  ggplot(aes(year, flow)) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  scale_x_log10()
+```
 
 <!----------------------------------------------------------------------------->
 
