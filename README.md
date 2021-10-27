@@ -35,4 +35,10 @@ There are three milestones for my analysis, work of which is distributed in 3 fo
     - R Markdown with source code: [mini-project-3.rmd](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/blob/main/Milestone%203/mini-project-3.rmd)
     - Figures: [mini-project-3 file folder](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/tree/main/Milestone%203/mini-project-3_files/figure-gfm)
 
+4. [output](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/tree/main/output)
+
+    The output is a summary table where the *range* (*max*, *min* and contrast) , *mean* and *median* of `flow` across the groups of `extream_type` from the data was computed, to observe the overall range and statistical features of the flow rate recorded as different type.
+    - csv file: [flow_extreme_type.csv](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/blob/main/output/flow_extreme_type.csv)
+    - R binary (RDS) file: [flow_extreme_type.rds](https://github.com/stat545ubc-2021/mini-data-analysis-evechen/blob/main/output/flow_extreme_type.rds)
+
 **Thanks for viewing and commenting on my work! 😃**
