@@ -375,7 +375,7 @@ function.
 ``` r
 # Create the summary table
 (flow_extreme_type <- flow_sample %>%
-   drop_na() %>%
+   drop_na("flow") %>%
    group_by(extreme_type) %>% 
    summarise(flow_maximum = max(flow),
              flow_minimum = min(flow),
@@ -388,8 +388,8 @@ function.
     ## # A tibble: 2 x 7
     ##   extreme_type flow_maximum flow_minimum flow_range flow_mean flow_median     n
     ##   <chr>               <dbl>        <dbl>      <dbl>     <dbl>       <dbl> <int>
-    ## 1 maximum            220          146         74       171         147        3
-    ## 2 minimum              8.44         3.62       4.82      6.27        6.17    96
+    ## 1 maximum            466          107        359       212.        204      109
+    ## 2 minimum              8.44         3.62       4.82      6.27        6.15   107
 
 ``` r
 # Write it into a csv file and save in the "output" folder
@@ -412,7 +412,7 @@ folder. Use the functions `saveRDS()` and `readRDS()`.
 ``` r
 # Create the summary table
 (flow_extreme_type <- flow_sample %>%
-   drop_na() %>%
+   drop_na("flow") %>%
    group_by(extreme_type) %>% 
    summarise(flow_maximum = max(flow),
              flow_minimum = min(flow),
@@ -425,8 +425,8 @@ folder. Use the functions `saveRDS()` and `readRDS()`.
     ## # A tibble: 2 x 7
     ##   extreme_type flow_maximum flow_minimum flow_range flow_mean flow_median     n
     ##   <chr>               <dbl>        <dbl>      <dbl>     <dbl>       <dbl> <int>
-    ## 1 maximum            220          146         74       171         147        3
-    ## 2 minimum              8.44         3.62       4.82      6.27        6.17    96
+    ## 1 maximum            466          107        359       212.        204      109
+    ## 2 minimum              8.44         3.62       4.82      6.27        6.15   107
 
 ``` r
 # Write and load an RDS file 
@@ -437,8 +437,8 @@ readRDS(here("output", "flow_extreme_type.rds"))
     ## # A tibble: 2 x 7
     ##   extreme_type flow_maximum flow_minimum flow_range flow_mean flow_median     n
     ##   <chr>               <dbl>        <dbl>      <dbl>     <dbl>       <dbl> <int>
-    ## 1 maximum            220          146         74       171         147        3
-    ## 2 minimum              8.44         3.62       4.82      6.27        6.17    96
+    ## 1 maximum            466          107        359       212.        204      109
+    ## 2 minimum              8.44         3.62       4.82      6.27        6.15   107
 
 <!----------------------------------------------------------------------------->
 

@@ -100,7 +100,7 @@ Now, choose two of the following tasks.
 
 **Task Number**: 1
 
-- Let's produce a new plot using `fct_inorder()` from the `forcats` packages, to re-order the plot based on the values of the `flow` rate, which orders them in the average value of `flow`. 
+- Let's produce a new plot using `fct_inorder()` from the `forcats` packages, to re-order the plot based on the values of the `flow` rate, which orders them in the average value of `flow`. This way we can observe the four `seasons` from the ones with **lower** flow rate recorded to **higher**.
 
 ``` {r}
 flow_sample_season  %>% 
@@ -123,6 +123,8 @@ flow_sample_season  %>%
 
 - Produce a new plot that groups all the `seasons` except for `Spring` into an `Other`, using the `forcats` package. 
 
+- I used this grouping to be able to see the `flow` rate recorded during the `Spring` as well as the `flow` rate during other `seasons`, since `Spring` is the only season that contains both `minimum` and `maximum` flow rate. I can then be able to extrapolate **if there's a year when both `minimum` and `maximum` rate was recorded in `Spring`, and if the records taken in such close date would make the value different from the others**. 
+
 ``` {r}
 flow_sample_season  %>% 
   mutate(season = fct_reorder(season, flow),
@@ -136,7 +138,6 @@ flow_sample_season  %>%
   theme_bw() 
 ```
 
-- I used this grouping to be able to see the `flow` rate recorded during the `Spring` as well as the `flow` rate during other `seasons`, since `Spring` is the only season that contains both `minimum` and `maximum` flow rate. This would allow me to extrapolate in which year the maximum and minimum flow rate was recorded during the 21st and 20th century. I can then be able to extrapolate **if there's a year when both `minimum` and `maximum` rate was recorded in `Spring`, and if the records taken in such close date would make the value different from the others**. 
 - From the plot we see that there are years when both records are taken in `Spring`. Values of minimum or maximum `flow` vary less (in narrower range) compared to the other seasons. There are no records with additional information as `A: partial day` or `E: Estimated` in `Spring`.  
 
 <!----------------------------------------------------------------------------->
@@ -201,7 +202,7 @@ I obtained my results using the `broom` package function `tidy()`.
 tidy(lmfit)
 ```
 
-- The p value for the `intercept` is `0.010`, and `0.046` for `year`. They are less than 0.05. This means that this model that can be intepreted as *flow = 946.20 - 0.37 year* fits the data well. 
+- The p value for the `intercept` is `0.010`, and `0.046` for `year`. They are **less than 0.05**. This means that this model that can be intepreted as `flow = 946.20 - 0.37 year` fits the data well. 
 
 - To answer the research question: Since the estimated slope of `year` is `-0.37 < 0`, we can say that the `maximum flow` is **decreasing** over `year`.
 
@@ -227,7 +228,7 @@ Take a summary table that you made from Milestone 2 (Exercise 1.2), and write it
 ```{r}
 # Create the summary table
 (flow_extreme_type <- flow_sample %>%
-   drop_na() %>%
+   drop_na("flow") %>%
    group_by(extreme_type) %>% 
    summarise(flow_maximum = max(flow),
              flow_minimum = min(flow),
@@ -253,7 +254,7 @@ Write your model object from Exercise 2 to an R binary file (an RDS), and load i
 ```{r}
 # Create the summary table
 (flow_extreme_type <- flow_sample %>%
-   drop_na() %>%
+   drop_na("flow") %>%
    group_by(extreme_type) %>% 
    summarise(flow_maximum = max(flow),
              flow_minimum = min(flow),
